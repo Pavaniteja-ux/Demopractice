@@ -1,26 +1,53 @@
-with
-orders as (select * from {{ ref('stg_orders') }}),
-customers as (select * from {{ ref('stg_customers') }}),
-products as (select * from {{ ref('stg_products') }}),
+with orders as (
+    select * from {{ ref('stg_orders') }}
+),
 
-joined as (
-    select
-        o.order_id,
-        o.order_ts,
-        date_trunc('day', o.order_ts) as order_date,
-        o.customer_id,
-        c.email,
-        c.first_name,
-        c.last_name,
-        o.product_id,
-        p.product_name,
-        p.category,
-        o.quantity,
-        coalesce(o.unit_price, p.unit_price) as unit_price_effective,
-        o.quantity * coalesce(o.unit_price, p.unit_price) as revenue,
-        o.order_status
-    from orders o
-    left join customers c on o.customer_id = c.customer_id
-    left join products p on o.product_id  = p.product_id
+customers as (
+    select * from {{ ref('stg_customerdata') }}
+),
+
+products as (
+    select * from {{ ref('stg_productdata') }}
 )
-select * from joined
+
+select
+    o.sales_order_line_key,
+    o.order_date_key,
+    o.due_date_key,
+    o.ship_date_key,
+    o.sales_territory_key,
+
+    -- Customer details
+    o.customer_key,
+    c.customer_id,
+    c.customer_name,
+    c.city,
+    c.state_province,
+    c.country_region,
+    c.postal_code,
+
+    -- Product details
+    o.product_key,
+    p.sku,
+    p.product_name,
+    p.category,
+    p.subcategory,
+    p.model,
+    p.standard_cost,
+    p.list_price,
+    p.color,
+
+    -- Order facts
+    o.order_quantity,
+    o.unit_price,
+    o.extended_amount,
+    o.unit_price_discount_pct,
+    o.product_standard_cost,
+    o.total_product_cost,
+    o.sales_amount
+
+from orders o
+left join customers c
+    on o.customer_key = c.customer_key
+left join products p
+    on o.product_key = p.product_key

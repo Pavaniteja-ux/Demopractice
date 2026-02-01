@@ -1,27 +1,31 @@
-name: 'retail_analytics'
+
+
+name: 'Analysis'
 version: '1.0.0'
 config-version: 2
 
-profile: 'retail_analytics'   # must exist in your ~/.dbt/profiles.yml
-
+profile: 'default'
 model-paths: ["models"]
 seed-paths: ["seeds"]
+test-paths: ["tests"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
-test-paths: ["tests"]
+analysis-paths: ["analyses"]
 
 models:
-  retail_analytics:
-    +materialized: view
-
-    staging:
+  my_new_project:
+    staging:           # <-- folder: models/staging
+      +schema: staging
       +materialized: view
-      +tags: ['staging']
 
-    intermediate:
+    intermediate:      # <-- folder: models/intermediate
+      +schema: intermediate
       +materialized: view
-      +tags: ['intermediate']
 
-    marts:
+    Marts:             # <-- capital M to match models/Marts
+      +schema: marts
       +materialized: table
-      +tags: ['marts']
+
+    # ❌ Remove this if you don't have models/example/*
+    # example:
+    #   +schema: example
