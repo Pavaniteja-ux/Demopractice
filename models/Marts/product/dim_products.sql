@@ -1,10 +1,11 @@
-with src as (
-    select * from {{ ref('stg_products') }}
-)
 select
-    product_id,
+    product_key,
+    sku,
     product_name,
     category,
-    unit_price,
-    created_at
-from src
+    subcategory,
+    model,
+    color,
+    standard_cost,
+    list_price
+from {{ ref('stg_productdata') }}
